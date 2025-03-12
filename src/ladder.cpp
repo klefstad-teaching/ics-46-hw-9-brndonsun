@@ -8,36 +8,40 @@ void error(string word1, string word2, string msg){
 }
 
 bool edit_distance_within(const std::string& str1, const std::string& str2, int d){
-    int m = str1.size();
-    int n = str2.size();
-    if (abs(n - m) > 1) 
+    if (abs((int)str1.size() - (int)str2.size()) > 1) 
         return false;
     
-    // Create a 2D DP table
-    vector<vector<int>> dp(m + 1, vector<int>(n + 1));
-
-    // Initialize base cases
-    for (int i = 0; i <= m; i++) {
-        dp[i][0] = i; // Cost of deleting characters from str1
-    }
-    for (int j = 0; j <= n; j++) {
-        dp[0][j] = j; // Cost of inserting characters into str1
-    }
-
-    // Fill the DP table
-    for (int i = 1; i <= m; i++) {
-        for (int j = 1; j <= n; j++) {
-            if (str1[i - 1] == str2[j - 1]) {
-                dp[i][j] = dp[i - 1][j - 1]; // No cost if characters are the same
-            } else {
-                dp[i][j] = 1 + min({dp[i - 1][j],   // Deletion
-                                    dp[i][j - 1],   // Insertion
-                                    dp[i - 1][j - 1]}); // Substitution
+    // If same length, check for exactly one difference
+    if (str1.size() == str2.size()) {
+        int diff = 0;
+        for (size_t i = 0; i < str1.size(); i++) {
+            if (str1[i] != str2[i]) {
+                diff++;
+                if (diff > 1) return false;
             }
         }
+        return diff == 1;
     }
-
-    return dp[m][n] <= d;
+    
+    // If lengths differ by 1, check for insertion/deletion
+    const string& shorter = (str1.size() < str2.size()) ? str1 : str2;
+    const string& longer = (str1.size() < str2.size()) ? str2 : str1;
+    
+    size_t i = 0, j = 0;
+    bool found_diff = false;
+    
+    while (i < shorter.size() && j < longer.size()) {
+        if (shorter[i] != longer[j]) {
+            if (found_diff) return false;
+            found_diff = true;
+            j++; // Skip the character in longer string
+        } else {
+            i++;
+            j++;
+        }
+    }
+    
+    return true;
 }
 
 
