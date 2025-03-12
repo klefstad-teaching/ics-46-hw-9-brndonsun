@@ -10,6 +10,8 @@ void error(string word1, string word2, string msg){
 bool edit_distance_within(const std::string& str1, const std::string& str2, int d){
     int m = str1.size();
     int n = str2.size();
+    if (abs(n - m) > 1) 
+        return false;
     
     // Create a 2D DP table
     vector<vector<int>> dp(m + 1, vector<int>(n + 1));
@@ -45,6 +47,7 @@ bool is_adjacent(const string& word1, const string& word2){
 }
 
 vector<string> generate_word_ladder(const string& begin_word, const string& end_word, const set<string>& word_list){
+    if(begin_word == end_word) return {};
     queue<vector<string>> ladder_queue;
     vector<string> first_word;
     first_word.push_back(begin_word);
@@ -66,7 +69,7 @@ vector<string> generate_word_ladder(const string& begin_word, const string& end_
             }
         }
     }
-    return {"No word ladder found."};
+    return {};
 }
 
 
